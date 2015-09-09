@@ -1,7 +1,6 @@
 kotlincPluginOptions in Compile ++= {
   val plugin = KotlinPluginOptions("org.jetbrains.kotlin.android")
   val layout = (projectLayout in Android).value
-  def option(key: String, value: String) = s"plugin:$plugin:$key=$value"
   plugin.option("androidRes", layout.res.getAbsolutePath) ::
   plugin.option("androidManifest", layout.manifest.getAbsolutePath) ::
   plugin.option("supportV4", file("/").getAbsolutePath) :: // too lazy to actually search, also not included in this test
