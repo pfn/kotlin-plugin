@@ -38,14 +38,28 @@ object KotlinCompile {
   val compiler = new K2JVMCompiler
   def compilerArgs = new K2JVMCompilerArguments
 
+  def listjar(jarfile: File): List[String] = {
+    if (!jarfile.isFile) Nil
+    else {
+      Using.fileInputStream(jarfile)(Using.jarInputStream(_) { jin =>
+        Iterator.continually(jin.getNextJarEntry) takeWhile (
+          _ != null) map (_.getName) toList
+      })
+    }
+  }
+
   def compile(options: Seq[String],
-              kotlinSource: File, extraSources: Seq[File],
+              extraSources: Seq[File],
+              compileJava: Boolean,
+              kotlinPluginOptions: Seq[String],
               classpath: Classpath,
               output: File, s: TaskStreams): Unit = {
     val args = compilerArgs
     val kotlinFiles = "*.kt" || "*.kts"
+    val javaFiles = "*.java"
 
-    val sources = extraSources.flatMap(_ ** kotlinFiles get).distinct
+    val sources = extraSources.flatMap(_ ** kotlinFiles get).distinct ++ (
+      if (compileJava) extraSources.flatMap(_ ** javaFiles get).distinct else Nil)
     if (sources.isEmpty) {
       s.log.debug("No kotlin sources found, skipping kotlin compile")
     } else {
@@ -55,8 +69,17 @@ object KotlinCompile {
       args.noStdlib = true
       args.noJdkAnnotations = true
       Args.parse(args, options.toArray)
-      val cp = classpath.map(_.data.getAbsoluteFile).mkString(File.pathSeparator)
+      val cpjars = classpath.map(_.data.getAbsoluteFile)
+      val pluginjars = cpjars.filter { cp =>
+        listjar(cp).exists(_.startsWith("META-INF/services/org.jetbrains.kotlin.compiler.plugin"))
+      }
+      val cp = cpjars.mkString(File.pathSeparator)
+      val pcp = pluginjars.map(_.getAbsolutePath).toArray
+      // XXX should plugins be excluded from compile classpath?
       args.classpath = Option(args.classpath).fold(cp)(_ + File.pathSeparator + cp)
+      args.pluginClasspaths = Option(args.pluginClasspaths).fold(pcp)(_ ++ pcp)
+      args.pluginOptions = Option(args.pluginOptions).fold(
+        kotlinPluginOptions.toArray)(_ ++ kotlinPluginOptions.toArray[String])
       args.destination = output.getAbsolutePath
       // bug in scalac prevents calling directly, yuck
       val r = KotlinCompileJava.compile(CompilerLogger(s.log), compiler, args)

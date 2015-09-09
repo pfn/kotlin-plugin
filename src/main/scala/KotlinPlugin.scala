@@ -26,22 +26,26 @@ object KotlinPlugin extends AutoPlugin {
     kotlinCompileOrder := KotlinCompileOrder.KotlinAfter,
     kotlinVersion <<= kotlinVersion in This,
     kotlincOptions := Nil,
+    kotlinCompileJava := false,
+    sources := {
+      sources.value.filterNot(kotlinCompileJava.value && _.getName.endsWith(".java"))
+    },
+    kotlincPluginOptions := Nil,
     kotlinCompileBefore := {
       if (kotlinCompileOrder.value == KotlinCompileOrder.KotlinBefore) {
-        KotlinCompile.compile(kotlincOptions.value, kotlinSource.value,
-          sourceDirectories.value, dependencyClasspath.value,
-          classDirectory.value, streams.value)
+        KotlinCompile.compile(kotlincOptions.value,
+          sourceDirectories.value, kotlinCompileJava.value, kotlincPluginOptions.value,
+          dependencyClasspath.value, classDirectory.value, streams.value)
       }
     },
     compile <<= compile dependsOn kotlinCompileBefore,
     compile := {
       if (kotlinCompileOrder.value == KotlinCompileOrder.KotlinAfter) {
-        KotlinCompile.compile(kotlincOptions.value, kotlinSource.value,
-          sourceDirectories.value, dependencyClasspath.value,
-          classDirectory.value, streams.value)
+        KotlinCompile.compile(kotlincOptions.value,
+          sourceDirectories.value, kotlinCompileJava.value, kotlincPluginOptions.value,
+          dependencyClasspath.value, classDirectory.value, streams.value)
       }
-      val analysis = compile.value
-      analysis
+      compile.value
     },
     kotlinSource := sourceDirectory.value / "kotlin"
   )
