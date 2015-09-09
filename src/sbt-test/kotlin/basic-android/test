@@ -1,0 +1,3 @@
+> android:package
+$ exists target/android-bin/kotlin-test-debug.apk
+> check-dex
