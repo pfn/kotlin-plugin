@@ -12,3 +12,5 @@ kotlincOptions in Compile <++= Def.task {
 }
 
 libraryDependencies <+= kotlinLib("android-extensions")
+
+libraryDependencies <+= kotlinLib("stdlib")

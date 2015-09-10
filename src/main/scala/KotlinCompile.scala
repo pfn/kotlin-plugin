@@ -1,6 +1,7 @@
 package kotlinplugin
 
 import java.io.File
+import java.util.jar.JarEntry
 
 import com.sampullara.cli.Args
 import org.jetbrains.kotlin.cli.common.ExitCode
@@ -38,18 +39,13 @@ object KotlinCompile {
   val compiler = new K2JVMCompiler
   def compilerArgs = new K2JVMCompilerArguments
 
-  def listjar(jarfile: File): List[String] = {
-    if (!jarfile.isFile) Nil
-    else {
-      Using.fileInputStream(jarfile)(Using.jarInputStream(_) { jin =>
-        Iterator.continually(jin.getNextJarEntry) takeWhile (
-          _ != null) map (_.getName) toList
-      })
+  def grepjar(jarfile: File)(pred: JarEntry => Boolean): Boolean =
+    jarfile.isFile && Using.jarFile(false)(jarfile) { in =>
+      in.entries.asScala exists pred
     }
-  }
 
   def compile(options: Seq[String],
-              extraSources: Seq[File],
+              sourceDirs: Seq[File],
               compileJava: Boolean,
               kotlinPluginOptions: Seq[String],
               classpath: Classpath,
@@ -58,8 +54,8 @@ object KotlinCompile {
     val kotlinFiles = "*.kt" || "*.kts"
     val javaFiles = "*.java"
 
-    val sources = extraSources.flatMap(_ ** kotlinFiles get).distinct ++ (
-      if (compileJava) extraSources.flatMap(_ ** javaFiles get).distinct else Nil)
+    val sources = sourceDirs.flatMap(_ ** kotlinFiles get).distinct ++ (
+      if (compileJava) sourceDirs.flatMap(_ ** javaFiles get).distinct else Nil)
     if (sources.isEmpty) {
       s.log.debug("No kotlin sources found, skipping kotlin compile")
     } else {
@@ -70,8 +66,9 @@ object KotlinCompile {
       args.noJdkAnnotations = true
       Args.parse(args, options.toArray)
       val cpjars = classpath.map(_.data.getAbsoluteFile)
-      val pluginjars = cpjars.filter { cp =>
-        listjar(cp).exists(_.startsWith("META-INF/services/org.jetbrains.kotlin.compiler.plugin"))
+      val pluginjars = cpjars.filter {
+        grepjar(_)(_.getName.startsWith(
+          "META-INF/services/org.jetbrains.kotlin.compiler.plugin"))
       }
       val cp = cpjars.mkString(File.pathSeparator)
       val pcp = pluginjars.map(_.getAbsolutePath).toArray

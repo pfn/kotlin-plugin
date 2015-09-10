@@ -25,8 +25,6 @@ object Keys {
     "version of kotlin to use for building")
   val kotlincOptions = TaskKey[Seq[String]]("kotlinc-options",
     "options to pass to the kotlin compiler")
-  val autoKotlinLibrary = SettingKey[Boolean]("auto-kotlin-library",
-    "automatically include kotlin runtime libraries")
 
   def kotlinLib(name: String) = Def.setting {
     "org.jetbrains.kotlin" % ("kotlin-" + name) % kotlinVersion.value
