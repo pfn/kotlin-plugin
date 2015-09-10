@@ -29,4 +29,4 @@ Build kotlin code using sbt
 
 ### Examples
 
-* See the [test cases](sbt-test/kotlin) for this plugin
+* See the [test cases](src/sbt-test/kotlin) for this plugin
