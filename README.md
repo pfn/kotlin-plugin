@@ -19,8 +19,8 @@ Build kotlin code using sbt
     be `% "provided"`
 * If a non-standard Classpath key needs to be added to the kotlin compile step,
   it can be added using the `kotlinClasspath(KEY)` function
-  * For example, to compile android using `android-sdk-plugin`:
-    `kotlincOptions in Compile <++= kotlinClasspath(bootClasspath in Android)`
+  * For example, to compile with the android platform using `android-sdk-plugin`:
+    `kotlinClasspath(Compile, bootClasspath in Android)`
 
 ## Options
 

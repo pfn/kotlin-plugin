@@ -1,6 +1,3 @@
-kotlincOptions in Compile <++= Def.task {
-  "-cp" :: (bootClasspath in Android).value.map(_.data.getAbsolutePath).mkString(java.io.File.pathSeparator) ::
-  Nil
-}
+kotlinClasspath(Compile, bootClasspath in Android)
 
 libraryDependencies <+= kotlinLib("stdlib")

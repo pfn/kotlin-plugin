@@ -32,7 +32,8 @@ object Keys {
 
   def kotlinPlugin(name: String) = kotlinLib(name)(_ % "provided")
 
-  def kotlinClasspath(classpathKey: TaskKey[sbt.Keys.Classpath]) = Def.task {
+  def kotlinClasspath(config: Configuration, classpathKey: TaskKey[sbt.Keys.Classpath]): Setting[_] =
+    kotlincOptions in config <++= Def.task {
     "-cp" :: classpathKey.value.map(_.data.getAbsolutePath).mkString(
       java.io.File.pathSeparator) ::
       Nil
