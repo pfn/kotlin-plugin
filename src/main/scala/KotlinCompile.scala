@@ -65,8 +65,8 @@ object KotlinCompile {
       args.noStdlib = true
       args.noJdkAnnotations = true
       Args.parse(args, options.toArray)
-      val cpjars = classpath.map(_.data.getAbsoluteFile)
-      val pluginjars = cpjars.filter {
+      val fcpjars = classpath.map(_.data.getAbsoluteFile)
+      val (pluginjars, cpjars) = fcpjars.partition {
         grepjar(_)(_.getName.startsWith(
           "META-INF/services/org.jetbrains.kotlin.compiler.plugin"))
       }

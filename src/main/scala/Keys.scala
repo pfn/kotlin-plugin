@@ -30,6 +30,14 @@ object Keys {
     "org.jetbrains.kotlin" % ("kotlin-" + name) % kotlinVersion.value
   }
 
+  def kotlinPlugin(name: String) = kotlinLib(name)(_ % "provided")
+
+  def kotlinClasspath(classpathKey: TaskKey[sbt.Keys.Classpath]) = Def.task {
+    "-cp" :: classpathKey.value.map(_.data.getAbsolutePath).mkString(
+      java.io.File.pathSeparator) ::
+      Nil
+  }
+
   case class KotlinPluginOptions(pluginId: String) {
     def option(key: String, value: String) =
       s"plugin:$pluginId:$key=$value"

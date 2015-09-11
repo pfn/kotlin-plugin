@@ -16,7 +16,13 @@ object KotlinPlugin extends AutoPlugin {
     kotlinVersion := BuildInfo.kotlinVersion,
     kotlincOptions := Nil,
     kotlincPluginOptions := Nil,
-    kotlinCompileOrder := KotlinCompileOrder.KotlinAfter
+    kotlinCompileOrder := KotlinCompileOrder.KotlinAfter,
+    watchSources     <++= Def.task {
+      import language.postfixOps
+      val kotlinSources = "*.kt" || "*.kts"
+      (sourceDirectories in Compile).value.flatMap(_ ** kotlinSources get) ++
+        (sourceDirectories in Test).value.flatMap(_ ** kotlinSources get)
+    }
   ) ++ inConfig(Compile)(kotlinSettings) ++
     inConfig(Test)(kotlinSettings)
 

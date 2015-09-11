@@ -6,11 +6,8 @@ kotlincPluginOptions in Compile ++= {
   plugin.option("supportV4", file("/").getAbsolutePath) :: // too lazy to actually search, also not included in this test
     Nil
 }
-kotlincOptions in Compile <++= Def.task {
-  "-cp" :: (bootClasspath in Android).value.map(_.data.getAbsolutePath).mkString(java.io.File.pathSeparator) ::
-  Nil
-}
+kotlincOptions in Compile <++= kotlinClasspath(bootClasspath in Android)
 
-libraryDependencies <+= kotlinLib("android-extensions")
+libraryDependencies <+= kotlinPlugin("android-extensions")
 
 libraryDependencies <+= kotlinLib("stdlib")
