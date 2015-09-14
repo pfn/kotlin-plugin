@@ -4,7 +4,7 @@ Build kotlin code using sbt
 ## Usage
 
 * for sbt 0.13.6+
-* `addSbtPlugin("com.hanhuy.sbt" % "kotlin-plugin" % "0.3")`
+* `addSbtPlugin("com.hanhuy.sbt" % "kotlin-plugin" % "0.6")`
 * Kotlin code will build automatically from `src/XXX/kotlin`
 * If necessary, add `libraryDependencies <+= kotlinLib("stdlib")`, it is not
   included by default.
@@ -31,7 +31,7 @@ Build kotlin code using sbt
   Use `val plugin = KotlinPluginOptions(PLUGINID)` and
   `plugin.option(KEY, VALUE)` to populate this setting
 * `kotlinCompileJava`: include java sources while compiling kotlin, this enables
-  mixed-mode compilation, however, java sources will not be included with the
+  mixed-mode compilation, however, java sources will not be compiled during the
   normal scala compilation step.
 * `kotlinSource`: specifies kotlin source directory, defaults to
   `src/main/kotlin` and `src/test/kotlin`
