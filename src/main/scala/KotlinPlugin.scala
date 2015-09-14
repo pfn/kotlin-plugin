@@ -16,6 +16,7 @@ object KotlinPlugin extends AutoPlugin {
     kotlinVersion := BuildInfo.kotlinVersion,
     kotlincOptions := Nil,
     kotlincPluginOptions := Nil,
+    kotlinCompileJava := false,
     kotlinCompileOrder := KotlinCompileOrder.KotlinAfter,
     watchSources     <++= Def.task {
       import language.postfixOps
@@ -31,9 +32,8 @@ object KotlinPlugin extends AutoPlugin {
   private[this] val kotlinSettings = List(
     sourceDirectories += kotlinSource.value,
     kotlinCompileOrder <<= kotlinCompileOrder in This,
-    kotlinVersion <<= kotlinVersion in This,
     kotlincOptions <<= kotlincOptions in This,
-    kotlinCompileJava := false,
+    kotlinCompileJava <<= kotlinCompileJava in This,
     sources := {
       sources.value.filterNot(kotlinCompileJava.value && _.getName.endsWith(".java"))
     },
