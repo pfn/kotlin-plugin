@@ -24,12 +24,13 @@ object KotlinPlugin extends AutoPlugin {
       (sourceDirectories in Compile).value.flatMap(_ ** kotlinSources get) ++
         (sourceDirectories in Test).value.flatMap(_ ** kotlinSources get)
     }
-  ) ++ inConfig(Compile)(kotlinSettings) ++
-    inConfig(Test)(kotlinSettings)
+  ) ++ inConfig(Compile)(kotlinCompileSettings) ++
+    inConfig(Test)(kotlinCompileSettings)
 
   val autoImport = Keys
 
-  private[this] val kotlinSettings = List(
+  // public to allow kotlin compile in other configs beyond Compile and Test
+  val kotlinCompileSettings = List(
     sourceDirectories += kotlinSource.value,
     kotlinCompileOrder <<= kotlinCompileOrder in This,
     kotlincOptions <<= kotlincOptions in This,
