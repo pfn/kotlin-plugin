@@ -4,10 +4,7 @@ import java.io.File
 import java.util.jar.JarEntry
 
 import com.sampullara.cli.Args
-import org.jetbrains.kotlin.cli.common.ExitCode
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
-import org.jetbrains.kotlin.cli.common.messages.{CompilerMessageLocation, CompilerMessageSeverity, MessageCollector}
-import org.jetbrains.kotlin.cli.jvm.K2JVMCompiler
 import sbt.Keys.{TaskStreams, Classpath}
 import sbt._
 
@@ -17,25 +14,6 @@ import collection.JavaConverters._
  * @author pfnguyen
  */
 object KotlinCompile {
-  case class CompilerLogger(log: Logger) extends MessageCollector {
-    override def report(severity: CompilerMessageSeverity,
-                        message: String,
-                        location: CompilerMessageLocation) = {
-      val logger = severity match {
-        case e if CompilerMessageSeverity.ERRORS.contains(e) => log.error(_: String)
-        case v if CompilerMessageSeverity.VERBOSE.contains(v) => log.verbose(_: String)
-        case CompilerMessageSeverity.INFO => log.info(_: String)
-        case CompilerMessageSeverity.WARNING => log.warn(_: String)
-      }
-
-      val path = location.getPath
-      if (path != null) {
-        logger(s"$path: ${location.getLine}, ${location.getColumn}: $message")
-      } else
-        logger(message)
-    }
-  }
-  val compiler = new K2JVMCompiler
   def compilerArgs = new K2JVMCompilerArguments
 
   def grepjar(jarfile: File)(pred: JarEntry => Boolean): Boolean =
@@ -94,12 +72,7 @@ object KotlinCompile {
         kotlinPluginOptions.toArray)(_ ++ kotlinPluginOptions.toArray[String])
       args.destination = output.getAbsolutePath
       // bug in scalac prevents calling directly, yuck
-      val r = KotlinCompileJava.compile(CompilerLogger(s.log), compiler, args)
-      r match {
-        case ExitCode.COMPILATION_ERROR | ExitCode.INTERNAL_ERROR =>
-          throw new MessageOnlyException("Compilation failed. See log for more details")
-        case _ =>
-      }
+      KotlinCompileJava.compile(s.log, args)
     }
   }
 
