@@ -23,7 +23,6 @@ object KotlinCompile {
 
   def compile(options: Seq[String],
               sourceDirs: Seq[File],
-              compileJava: Boolean,
               kotlinPluginOptions: Seq[String],
               classpath: Classpath,
               output: File, s: TaskStreams): Unit = {
@@ -32,29 +31,18 @@ object KotlinCompile {
     val javaFiles = "*.java"
 
     val kotlinSources = sourceDirs.flatMap(d => (d ** kotlinFiles).get.distinct)
-    val javaSources = if (compileJava) {
-      sourceDirs.filterNot(f => sourceDirs.exists(f0 =>
-        f0.relativeTo(f).isDefined && f != f0)) map (d =>
-        (d, (d ** javaFiles).get.size)) filter (_._2 > 0)
-    } else Nil
-    val javaSourceCount = javaSources.map(_._2).sum
-    if (kotlinSources.isEmpty && javaSourceCount == 0) {
+    val javaSources = sourceDirs.filterNot(f => sourceDirs.exists(f0 =>
+      f0.relativeTo(f).isDefined && f != f0)) map (d =>
+      (d, (d ** javaFiles).get)) filter (_._2.nonEmpty)
+    if (kotlinSources.isEmpty) {
       s.log.debug("No sources found, skipping kotlin compile")
     } else {
       def pluralizeSource(count: Int) =
         if (count == 1) "source" else "sources"
-      val message = if (kotlinSources.nonEmpty && javaSourceCount > 0) {
-        s"Compiling ${kotlinSources.size} Kotlin ${pluralizeSource(kotlinSources.size)} and $javaSourceCount Java ${pluralizeSource(javaSourceCount)}"
-      } else if (kotlinSources.nonEmpty) {
+      val message =
         s"Compiling ${kotlinSources.size} Kotlin ${pluralizeSource(kotlinSources.size)}"
-      } else if (javaSourceCount > 0) {
-        s"Compiling $javaSourceCount Java ${pluralizeSource(javaSourceCount)}"
-      } else {
-        "Compiling nothing"
-      }
       s.log.info(message)
-      args.freeArgs = (kotlinSources.map(_.getAbsolutePath) ++ (
-        if (javaSourceCount > 0) javaSources.map(_._1.getAbsolutePath) else Nil)).asJava
+      args.freeArgs = (kotlinSources ++ javaSources.map(_._1)).map(_.getAbsolutePath).asJava
 
       args.noStdlib = true
       args.noJdkAnnotations = true
@@ -70,6 +58,7 @@ object KotlinCompile {
       args.pluginClasspaths = Option(args.pluginClasspaths).fold(pcp)(_ ++ pcp)
       args.pluginOptions = Option(args.pluginOptions).fold(
         kotlinPluginOptions.toArray)(_ ++ kotlinPluginOptions.toArray[String])
+      output.mkdirs()
       args.destination = output.getAbsolutePath
       // bug in scalac prevents calling directly, yuck
       KotlinCompileJava.compile(s.log, args)

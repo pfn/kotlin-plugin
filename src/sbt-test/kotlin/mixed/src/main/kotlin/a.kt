@@ -1,3 +1,3 @@
 package demo
-class KotlinA {
+open class KotlinA {
 }

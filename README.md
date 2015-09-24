@@ -2,6 +2,8 @@
 
 Build kotlin code using sbt
 
+Current version 0.8
+
 ## Usage
 
 * for sbt 0.13.6+

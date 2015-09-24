@@ -16,8 +16,6 @@ object KotlinPlugin extends AutoPlugin {
     kotlinVersion := BuildInfo.kotlinVersion,
     kotlincOptions := Nil,
     kotlincPluginOptions := Nil,
-    kotlinCompileJava := false,
-    kotlinCompileOrder := KotlinCompileOrder.KotlinAfter,
     watchSources     <++= Def.task {
       import language.postfixOps
       val kotlinSources = "*.kt" || "*.kts"
@@ -32,31 +30,14 @@ object KotlinPlugin extends AutoPlugin {
   // public to allow kotlin compile in other configs beyond Compile and Test
   val kotlinCompileSettings = List(
     sourceDirectories += kotlinSource.value,
-    kotlinCompileOrder <<= kotlinCompileOrder in This,
     kotlincOptions <<= kotlincOptions in This,
-    kotlinCompileJava <<= kotlinCompileJava in This,
-    sources := {
-      sources.value.filterNot(kotlinCompileJava.value && _.getName.endsWith(".java"))
-    },
     kotlincPluginOptions <<= kotlincPluginOptions in This,
-    kotlinCompileBefore := {
-      if (kotlinCompileOrder.value == KotlinCompileOrder.KotlinBefore) {
+    kotlinCompileBefore <<= Def.task {
         KotlinCompile.compile(kotlincOptions.value,
-          sourceDirectories.value, kotlinCompileJava.value, kotlincPluginOptions.value,
+          sourceDirectories.value, kotlincPluginOptions.value,
           dependencyClasspath.value, classDirectory.value, streams.value)
-      }
-    },
+    } dependsOn (compileInputs in (Compile,compile)),
     compile <<= compile dependsOn kotlinCompileBefore,
-    compile := {
-      if (kotlinCompileOrder.value == KotlinCompileOrder.KotlinAfter) {
-        KotlinCompile.compile(kotlincOptions.value,
-          sourceDirectories.value, kotlinCompileJava.value, kotlincPluginOptions.value,
-          dependencyClasspath.value, classDirectory.value, streams.value)
-      }
-      // XXX handle updating Analysis
-      // maybe once kotlin supports incremental compilation
-      compile.value
-    },
     kotlinSource := sourceDirectory.value / "kotlin"
   )
 }

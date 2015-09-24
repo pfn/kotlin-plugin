@@ -7,19 +7,11 @@ import sbt._
  */
 object Keys {
   sealed trait KotlinCompileOrder
-  object KotlinCompileOrder {
-    case object KotlinBefore extends KotlinCompileOrder
-    case object KotlinAfter extends KotlinCompileOrder
-  }
 
   val kotlinCompileBefore = TaskKey[Unit]("kotlin-compile-before",
     "runs kotlin compilation before normal compilation if configured to do so")
-  val kotlinCompileOrder = SettingKey[KotlinCompileOrder]("kotlin-compile-order",
-    "order of kotlin compilation, before or after normal compilation")
   val kotlincPluginOptions = TaskKey[Seq[String]]("kotlinc-plugin-options",
     "kotlin compiler plugin options")
-  val kotlinCompileJava = SettingKey[Boolean]("kotlin-compile-java",
-    "whether kotlinc should also compile java (to allow for mixed compilation)")
   val kotlinSource = SettingKey[File]("kotlin-source", "kotlin source directory")
   val kotlinVersion = SettingKey[String]("kotlin-version",
     "version of kotlin to use for building")
