@@ -1,6 +1,7 @@
 package kotlinplugin
 
 import Keys._
+import com.hanhuy.sbt.bintray.UpdateChecker
 import sbt._
 import sbt.Keys._
 import sbt.plugins.JvmPlugin
@@ -12,7 +13,30 @@ object KotlinPlugin extends AutoPlugin {
   override def trigger = allRequirements
   override def requires = JvmPlugin
 
+
+  override def globalSettings = (onLoad := onLoad.value andThen { s =>
+    Project.runTask(updateCheck in Keys.Kotlin, s).fold(s)(_._1)
+  }) :: Nil
+
   override def projectSettings = Seq(
+    updateCheck in Kotlin := {
+      val log = streams.value.log
+      UpdateChecker("pfn", "sbt-plugins", "kotlin-plugin") {
+        case Left(t) =>
+          log.debug("Failed to load version info: " + t)
+        case Right((versions, current)) =>
+          log.debug("available versions: " + versions)
+          log.debug("current version: " + BuildInfo.version)
+          log.debug("latest version: " + current)
+          if (versions.toSet(BuildInfo.version)) {
+            if (BuildInfo.version != current) {
+              log.warn(
+                s"UPDATE: A newer kotlin-plugin is available:" +
+                  s" $version, currently running: ${BuildInfo.version}")
+            }
+          }
+      }
+    },
     kotlinVersion := BuildInfo.kotlinVersion,
     kotlincOptions := Nil,
     kotlincPluginOptions := Nil,

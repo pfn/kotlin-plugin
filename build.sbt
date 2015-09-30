@@ -10,11 +10,12 @@ name := "kotlin-plugin"
 
 organization := "com.hanhuy.sbt"
 
-version := "0.8"
+version := "0.9-SNAPSHOT"
 
 scalacOptions ++= Seq("-deprecation","-Xlint","-feature")
 
 libraryDependencies ++=
+  "com.hanhuy.sbt" %% "bintray-update-checker" % "0.1" ::
   kotlinLib("compiler") ::
   Nil
 

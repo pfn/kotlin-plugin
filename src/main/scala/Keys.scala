@@ -8,6 +8,9 @@ import sbt._
 object Keys {
   sealed trait KotlinCompileOrder
 
+  val Kotlin = config("kotlin")
+
+  val updateCheck = TaskKey[Unit]("update-check", "check for a new version of the plugin")
   val kotlinCompileBefore = TaskKey[Unit]("kotlin-compile-before",
     "runs kotlin compilation before normal compilation if configured to do so")
   val kotlincPluginOptions = TaskKey[Seq[String]]("kotlinc-plugin-options",
