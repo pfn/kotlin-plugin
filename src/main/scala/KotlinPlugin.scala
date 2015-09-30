@@ -28,7 +28,7 @@ object KotlinPlugin extends AutoPlugin {
           log.debug("available versions: " + versions)
           log.debug("current version: " + BuildInfo.version)
           log.debug("latest version: " + current)
-          if (versions.toSet(BuildInfo.version)) {
+          if (versions(BuildInfo.version)) {
             if (BuildInfo.version != current) {
               log.warn(
                 s"UPDATE: A newer kotlin-plugin is available:" +
