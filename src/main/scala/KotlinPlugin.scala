@@ -32,7 +32,7 @@ object KotlinPlugin extends AutoPlugin {
             if (BuildInfo.version != current) {
               log.warn(
                 s"UPDATE: A newer kotlin-plugin is available:" +
-                  s" $version, currently running: ${BuildInfo.version}")
+                  s" $current, currently running: ${BuildInfo.version}")
             }
           }
       }
