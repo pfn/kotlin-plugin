@@ -9,7 +9,7 @@ TaskKey[Unit]("check-dex") := {
     val tools = p.getTargetInfo.getBuildTools.getLocation
     val dexdump = tools / "dexdump"
     val lines = Seq(
-      dexdump.getAbsolutePath,
+      dexdump.getAbsolutePath, "-i",
       (layout.bin / "classes.dex").getAbsolutePath).lines
     val hasKotlinClasses = lines map (_.trim) exists { l =>
       l.startsWith("Class descriptor") && l.endsWith("'Lkotlin/IntIterator;'")

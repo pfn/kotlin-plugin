@@ -45,7 +45,6 @@ object KotlinCompile {
       args.freeArgs = (kotlinSources ++ javaSources.map(_._1)).map(_.getAbsolutePath).asJava
 
       args.noStdlib = true
-      args.noJdkAnnotations = true
       Args.parse(args, options.toArray)
       val fcpjars = classpath.map(_.data.getAbsoluteFile)
       val (pluginjars, cpjars) = fcpjars.partition {
