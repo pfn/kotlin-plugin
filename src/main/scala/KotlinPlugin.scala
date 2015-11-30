@@ -53,7 +53,7 @@ object KotlinPlugin extends AutoPlugin {
 
   // public to allow kotlin compile in other configs beyond Compile and Test
   val kotlinCompileSettings = List(
-    sourceDirectories += kotlinSource.value,
+    unmanagedSourceDirectories += kotlinSource.value,
     kotlincOptions <<= kotlincOptions in This,
     kotlincPluginOptions <<= kotlincPluginOptions in This,
     kotlinCompileBefore <<= Def.task {

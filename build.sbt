@@ -1,7 +1,7 @@
 //import ScriptedPlugin._
 import bintray.Keys._
 
-val kotlinVersion = "1.0.0-beta-1038"
+val kotlinVersion = "1.0.0-beta-2423"
 
 def kotlinLib(name: String) =
   "org.jetbrains.kotlin" % ("kotlin-" + name) % kotlinVersion
@@ -10,7 +10,7 @@ name := "kotlin-plugin"
 
 organization := "com.hanhuy.sbt"
 
-version := "0.9.2"
+version := "0.9.3-SNAPSHOT"
 
 scalacOptions ++= Seq("-deprecation","-Xlint","-feature")
 
