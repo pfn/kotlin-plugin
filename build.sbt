@@ -16,7 +16,7 @@ scalacOptions ++= Seq("-deprecation","-Xlint","-feature")
 
 libraryDependencies ++=
   "com.hanhuy.sbt" %% "bintray-update-checker" % "0.1" ::
-  kotlinLib("compiler") ::
+  kotlinLib("compiler-embeddable") ::
   Nil
 
 sbtPlugin := true

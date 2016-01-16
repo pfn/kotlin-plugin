@@ -3,7 +3,7 @@ package kotlinplugin
 import java.io.File
 import java.util.jar.JarEntry
 
-import com.sampullara.cli.Args
+import org.jetbrains.kotlin.relocated.com.sampullara.cli.Args
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import sbt.Keys.{TaskStreams, Classpath}
 import sbt._
