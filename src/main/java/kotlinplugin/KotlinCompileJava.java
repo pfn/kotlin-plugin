@@ -10,7 +10,6 @@ import org.jetbrains.kotlin.cli.jvm.K2JVMCompiler;
 import org.jetbrains.kotlin.config.Services;
 import sbt.Logger;
 import sbt.MessageOnlyException;
-import scala.Function0;
 import xsbti.F0;
 
 /**
