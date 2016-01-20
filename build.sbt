@@ -1,7 +1,7 @@
 //import ScriptedPlugin._
 import bintray.Keys._
 
-val kotlinVersion = "1.0.0-beta-2423"
+val kotlinVersion = "1.0.0-beta-4589"
 
 def kotlinLib(name: String) =
   "org.jetbrains.kotlin" % ("kotlin-" + name) % kotlinVersion
