@@ -3,7 +3,7 @@ package kotlin.test
 import android.app.Activity
 import android.os.Bundle
 
-import kotlinx.android.synthetic.main.*
+import kotlinx.android.synthetic.main.main.*
 
 class MainActivity : Activity()
 {
