@@ -27,9 +27,6 @@ Current version 0.9.3
 
 ## Options
 
-* `kotlinCompileOrder`: specifies whether to have kotlin compile before or after
-  the normal (scala+java) compilation step, values:
-  `KotlinCompileOrder.KotlinBefore` and `KotlinCompileOrder.KotlinAfter`
 * `kotlincPluginOptions`: specifies options to pass to kotlin compiler plugins.
   Use `val plugin = KotlinPluginOptions(PLUGINID)` and
   `plugin.option(KEY, VALUE)` to populate this setting
