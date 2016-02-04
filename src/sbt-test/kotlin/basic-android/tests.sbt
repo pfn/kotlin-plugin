@@ -13,7 +13,7 @@ TaskKey[Unit]("check-dex") := {
     dexdump.getAbsolutePath, "-i",
     (layout.dex / "classes.dex").getAbsolutePath).lines
   val hasKotlinClasses = lines map (_.trim) exists { l =>
-    l.startsWith("Class descriptor") && l.endsWith("'Lkotlin/IntIterator;'")
+    l.startsWith("Class descriptor") && l.endsWith("'Lkotlin/Unit;'")
   }
   if (!hasKotlinClasses) {
     lines filter (_.trim.startsWith("Class descriptor")) foreach (l => s.log.info(l))

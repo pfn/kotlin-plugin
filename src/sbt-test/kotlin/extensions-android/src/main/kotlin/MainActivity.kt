@@ -1,4 +1,4 @@
-package kotlin.test
+package sbt.kotlin.test
 
 import android.app.Activity
 import android.os.Bundle
