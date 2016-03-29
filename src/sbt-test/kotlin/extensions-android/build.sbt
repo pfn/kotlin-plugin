@@ -7,6 +7,6 @@ kotlincPluginOptions in Compile ++= {
 }
 kotlinClasspath(Compile, bootClasspath in Android)
 
-libraryDependencies <+= kotlinPlugin("android-extensions")
+kotlinPlugin("android-extensions")
 
-libraryDependencies <+= kotlinLib("stdlib")
+kotlinLib("stdlib")

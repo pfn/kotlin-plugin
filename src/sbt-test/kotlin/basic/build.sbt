@@ -1,4 +1,4 @@
-libraryDependencies <+= kotlinLib("stdlib")
+kotlinLib("stdlib")
 
 val listClasses = taskKey[Unit]("listClasses")
 

@@ -1,4 +1,4 @@
-package kotlinplugin
+package kotlin
 
 import Keys._
 import com.hanhuy.sbt.bintray.UpdateChecker
@@ -13,12 +13,17 @@ object KotlinPlugin extends AutoPlugin {
   override def trigger = allRequirements
   override def requires = JvmPlugin
 
+  override def projectConfigurations = KotlinInternal :: Nil
 
   override def globalSettings = (onLoad := onLoad.value andThen { s =>
     Project.runTask(updateCheck in Keys.Kotlin, s).fold(s)(_._1)
   }) :: Nil
 
   override def projectSettings = Seq(
+    libraryDependencies <+= Def.setting {
+      "org.jetbrains.kotlin" % "kotlin-compiler-embeddable" % kotlinVersion.value % KotlinInternal.name
+    },
+    managedClasspath in KotlinInternal := Classpaths.managedJars(KotlinInternal, classpathTypes.value, update.value),
     updateCheck in Kotlin := {
       val log = streams.value.log
       UpdateChecker("pfn", "sbt-plugins", "kotlin-plugin") {
@@ -37,7 +42,7 @@ object KotlinPlugin extends AutoPlugin {
           }
       }
     },
-    kotlinVersion := BuildInfo.kotlinVersion,
+    kotlinVersion := "1.0.1-2",
     kotlincOptions := Nil,
     kotlincPluginOptions := Nil,
     watchSources     <++= Def.task {
@@ -56,12 +61,13 @@ object KotlinPlugin extends AutoPlugin {
     unmanagedSourceDirectories += kotlinSource.value,
     kotlincOptions <<= kotlincOptions in This,
     kotlincPluginOptions <<= kotlincPluginOptions in This,
-    kotlinCompileBefore <<= Def.task {
+    kotlinCompile <<= Def.task {
         KotlinCompile.compile(kotlincOptions.value,
           sourceDirectories.value, kotlincPluginOptions.value,
-          dependencyClasspath.value, classDirectory.value, streams.value)
+          dependencyClasspath.value, (managedClasspath in KotlinInternal).value,
+          classDirectory.value, streams.value)
     } dependsOn (compileInputs in (Compile,compile)),
-    compile <<= compile dependsOn kotlinCompileBefore,
+    compile <<= compile dependsOn kotlinCompile,
     kotlinSource := sourceDirectory.value / "kotlin"
   )
 }

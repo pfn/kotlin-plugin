@@ -1,22 +1,16 @@
 //import ScriptedPlugin._
 import bintray.Keys._
 
-val kotlinVersion = "1.0.0"
-
-def kotlinLib(name: String) =
-  "org.jetbrains.kotlin" % ("kotlin-" + name) % kotlinVersion
-
 name := "kotlin-plugin"
 
 organization := "com.hanhuy.sbt"
 
-version := "0.9.5"
+version := "1.0.0-SNAPSHOT"
 
 scalacOptions ++= Seq("-deprecation","-Xlint","-feature")
 
 libraryDependencies ++=
   "com.hanhuy.sbt" %% "bintray-update-checker" % "0.1" ::
-  kotlinLib("compiler-embeddable") ::
   Nil
 
 sbtPlugin := true
@@ -27,9 +21,7 @@ buildInfoSettings
 
 sourceGenerators in Compile <+= buildInfo
 
-buildInfoKeys := Seq(version, ("kotlinVersion", kotlinVersion))
-
-buildInfoPackage := "kotlinplugin"
+buildInfoPackage := "kotlin"
 
 // bintray
 bintrayPublishSettings

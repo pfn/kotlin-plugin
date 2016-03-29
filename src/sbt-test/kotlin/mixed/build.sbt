@@ -1,3 +1,3 @@
-libraryDependencies <+= kotlinLib("stdlib")
+kotlinLib("stdlib")
 
 kotlincOptions += "-verbose"
