@@ -14,11 +14,11 @@ Current version 1.0.0
     above to load standard kotlin modules provided by JetBrains. For JetBrains
     kotlin compiler plugins, use `kotlinPlugin(NAME)` (e.g.
     `kotlinPlugin("android-extensions")`). The difference is that the latter
-    marks the module as a `compiler-internal` dependency and will be excluded
+    marks the module as a `compile-internal` dependency and will be excluded
     from the final build product.
   * Any other libraries can be loaded using the normal `libraryDependencies`
     mechanism. Compiler plugins should be added as a normal `libraryDependency`
-    but specified to be `% "compiler-internal"`
+    but specified to be `% "compile-internal"`
 * If a non-standard Classpath key needs to be added to the kotlin compile step,
   it can be added using the `kotlinClasspath(KEY)` function
   * For example, to compile with the android platform using `android-sdk-plugin`:
