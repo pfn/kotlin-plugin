@@ -37,13 +37,14 @@ object KotlinCompile {
     val kotlinFiles = "*.kt" || "*.kts"
     val javaFiles = "*.java"
 
-    val kotlinSources = sourceDirs.flatMap(d => (d ** kotlinFiles).get.distinct)
+    val kotlinSources = sourceDirs.flatMap(d => (d ** kotlinFiles).get).distinct
     val javaSources = sourceDirs.filterNot(f => sourceDirs.exists(f0 =>
       f0.relativeTo(f).isDefined && f != f0)) map (d =>
       (d, (d ** javaFiles).get)) filter (_._2.nonEmpty)
     if (kotlinSources.isEmpty) {
       s.log.debug("No sources found, skipping kotlin compile")
     } else {
+      s.log.debug(s"Compiling sources $kotlinSources")
       def pluralizeSource(count: Int) =
         if (count == 1) "source" else "sources"
       val message =
