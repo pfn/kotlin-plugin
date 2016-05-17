@@ -2,12 +2,12 @@
 
 Build kotlin code using sbt
 
-Current version 1.0.0
+Current version 1.0.1
 
 ## Usage
 
 * for sbt 0.13.6+
-* `addSbtPlugin("com.hanhuy.sbt" % "kotlin-plugin" % "1.0.0")`
+* `addSbtPlugin("com.hanhuy.sbt" % "kotlin-plugin" % "1.0.1")`
 * Kotlin code will build automatically from `src/XXX/kotlin`
 * If necessary, add `kotlinLib("stdlib")`, it is not included by default.
   * Loading standard kotlin libraries and plugins: use `kotlinLib(NAME)` as
