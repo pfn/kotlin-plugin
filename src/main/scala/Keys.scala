@@ -12,7 +12,7 @@ object Keys {
   val KotlinInternal = config("kotlin-internal").hide
 
   val updateCheck = TaskKey[Unit]("update-check", "check for a new version of the plugin")
-  val kotlinCompile = TaskKey[Unit]("kotlin-compile-before",
+  val kotlinCompile = TaskKey[Unit]("kotlin-compile",
     "runs kotlin compilation, occurs before normal compilation")
   val kotlincPluginOptions = TaskKey[Seq[String]]("kotlinc-plugin-options",
     "kotlin compiler plugin options")

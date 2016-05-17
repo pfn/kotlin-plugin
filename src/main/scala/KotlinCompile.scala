@@ -1,7 +1,7 @@
 package kotlin
 
 import java.io.File
-import java.lang.reflect.Method
+import java.lang.reflect.{Field, Method}
 import java.util.jar.JarEntry
 
 import sbt.Keys.{Classpath, TaskStreams}
@@ -9,6 +9,8 @@ import sbt._
 import sbt.classpath.ClasspathUtilities
 
 import collection.JavaConverters._
+import language.existentials
+import scala.util.Try
 
 /**
  * @author pfnguyen
@@ -20,6 +22,9 @@ object KotlinCompile {
       in.entries.asScala exists pred
     }
 
+  lazy val kotlinMemo = scalaz.Memo.immutableHashMapMemo[Classpath, KotlinReflection](cp =>
+    KotlinReflection.fromClasspath(cp))
+
   def compile(options: Seq[String],
               sourceDirs: Seq[File],
               kotlinPluginOptions: Seq[String],
@@ -27,7 +32,7 @@ object KotlinCompile {
               compilerClasspath: Classpath,
               output: File, s: TaskStreams): Unit = {
     import language.reflectiveCalls
-    val stub = KotlinStub(s, compilerClasspath)
+    val stub = KotlinStub(s, kotlinMemo(compilerClasspath))
     val args = stub.compilerArgs
     val kotlinFiles = "*.kt" || "*.kts"
     val javaFiles = "*.java"
@@ -66,27 +71,51 @@ object KotlinCompile {
   }
 }
 
-case class KotlinStub(s: TaskStreams, cp: Seq[Attributed[File]]) {
+object KotlinReflection {
+  def fromClasspath(cp: Classpath): KotlinReflection = {
+    val cl = ClasspathUtilities.toLoader(cp.map(_.data))
+    val compilerClass = cl.loadClass("org.jetbrains.kotlin.cli.jvm.K2JVMCompiler")
+    val servicesClass = cl.loadClass("org.jetbrains.kotlin.config.Services")
+    val messageCollectorClass = cl.loadClass("org.jetbrains.kotlin.cli.common.messages.MessageCollector")
+    val commonCompilerArgsClass = cl.loadClass("org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments")
+    val argsClass = cl.loadClass("org.jetbrains.kotlin.relocated.com.sampullara.cli.Args")
+    // kotlin 1.0.2 bundles broken spullara:cli-args that removed Args.parse(Object,String[])
+    val parseMethod = Try(argsClass.getMethod("parse", classOf[Object], classOf[Array[String]])).map(Left.apply).recoverWith {
+      case _ =>
+        Try(argsClass.getMethod("parse", classOf[Object], classOf[Array[String]], classOf[Boolean])).map(Right.apply)
+    }.getOrElse(throw new MessageOnlyException("Unable to find method Args.parse in kotlin compiler bundle"))
+
+    KotlinReflection(
+      cl,
+      servicesClass,
+      compilerClass,
+      cl.loadClass("org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments"),
+      messageCollectorClass,
+      commonCompilerArgsClass,
+      compilerClass.getMethod("exec", messageCollectorClass, servicesClass, commonCompilerArgsClass),
+      servicesClass.getDeclaredField("EMPTY"),
+      argsClass,
+      parseMethod)
+  }
+}
+case class KotlinReflection(cl: ClassLoader,
+                            servicesClass: Class[_],
+                            compilerClass: Class[_],
+                            compilerArgsClass: Class[_],
+                            messageCollectorClass: Class[_],
+                            commonCompilerArgsClass: Class[_],
+                            compilerExec: Method,
+                            servicesEmptyField: Field,
+                            argsClass: Class[_],
+                            argsParse: Either[Method,Method])
+case class KotlinStub(s: TaskStreams, kref: KotlinReflection) {
   import language.reflectiveCalls
-  val cl = ClasspathUtilities.toLoader(cp map (_.data))
-  val servicesClass = cl.loadClass("org.jetbrains.kotlin.config.Services")
-  val compilerClass = cl.loadClass("org.jetbrains.kotlin.cli.jvm.K2JVMCompiler")
-  val compilerArgsClass = cl.loadClass(
-    "org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments")
-  val messageCollectorClass = cl.loadClass(
-    "org.jetbrains.kotlin.cli.common.messages.MessageCollector")
-  val commonCompilerArgsClass = cl.loadClass(
-    "org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments")
-  val compilerExec = compilerClass.getMethod("exec",
-    messageCollectorClass, servicesClass, commonCompilerArgsClass)
-  val servicesEmptyField = servicesClass.getDeclaredField("EMPTY")
-  val argsClass = cl.loadClass(
-    "org.jetbrains.kotlin.relocated.com.sampullara.cli.Args")
-  val argsParse = argsClass.getMethod("parse", classOf[Object], classOf[Array[String]])
+  import kref._
 
   def parse(args: Object, options: Array[String]): Unit = {
-    argsParse.invoke(null, args, options)
+    argsParse.fold(_.invoke(null, args, options), _.invoke(null, args,options, false: java.lang.Boolean))
   }
+
   def messageCollector: AnyRef = {
     type CompilerMessageLocation = {
       def getPath: String
