@@ -1,5 +1,7 @@
 # kotlin-plugin
 
+[![Build Status](https://travis-ci.org/pfn/kotlin-plugin.svg?branch=master)](https://travis-ci.org/pfn/kotlin-plugin)
+
 Build kotlin code using sbt
 
 Current version 1.0.2
