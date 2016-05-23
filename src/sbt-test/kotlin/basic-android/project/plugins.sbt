@@ -7,5 +7,3 @@
       .stripMargin)
   else addSbtPlugin("com.hanhuy.sbt" % "kotlin-plugin" % ver)
 }
-
-

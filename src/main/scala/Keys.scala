@@ -28,7 +28,7 @@ object Keys {
   def kotlinPlugin(name: String) = sbt.Keys.libraryDependencies +=
     "org.jetbrains.kotlin" % ("kotlin-" + name) % kotlinVersion.value % "compile-internal"
 
-  def kotlinClasspath(config: Configuration, classpathKey: TaskKey[sbt.Keys.Classpath]): Setting[_] =
+  def kotlinClasspath(config: Configuration, classpathKey: Def.Initialize[sbt.Keys.Classpath]): Setting[_] =
     kotlincOptions in config <++= Def.task {
     "-cp" :: classpathKey.value.map(_.data.getAbsolutePath).mkString(
       java.io.File.pathSeparator) ::

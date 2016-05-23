@@ -1,3 +1,5 @@
+androidBuild
+
 kotlincPluginOptions in Compile ++= {
   val plugin = KotlinPluginOptions("org.jetbrains.kotlin.android")
   val layout = (projectLayout in Android).value
