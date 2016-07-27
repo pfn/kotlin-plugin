@@ -79,7 +79,9 @@ object KotlinReflection {
     val servicesClass = cl.loadClass("org.jetbrains.kotlin.config.Services")
     val messageCollectorClass = cl.loadClass("org.jetbrains.kotlin.cli.common.messages.MessageCollector")
     val commonCompilerArgsClass = cl.loadClass("org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments")
-    val argsClass = cl.loadClass("org.jetbrains.kotlin.relocated.com.sampullara.cli.Args")
+    val classesToTry = "org.jetbrains.kotlin.com.sampullara.cli.Args" :: "org.jetbrains.kotlin.relocated.com.sampullara.cli.Args" :: Nil
+    val argsClass = classesToTry.view.map(x => Try(cl.loadClass(x))).find(_.isSuccess)
+      .getOrElse(throw new MessageOnlyException("Unable to find Args class")).get
     // kotlin 1.0.2 bundles broken spullara:cli-args that removed Args.parse(Object,String[])
     val parseMethod = Try(argsClass.getMethod("parse", classOf[Object], classOf[Array[String]])).map(Left.apply).recoverWith {
       case _ =>
