@@ -5,12 +5,12 @@ name := "kotlin-plugin"
 
 organization := "com.hanhuy.sbt"
 
-version := "1.0.4"
+version := "1.0.5"
 
 scalacOptions ++= Seq("-deprecation","-Xlint","-feature")
 
 libraryDependencies ++=
-  "com.hanhuy.sbt" %% "bintray-update-checker" % "0.1" ::
+  "com.hanhuy.sbt" %% "bintray-update-checker" % "0.2" ::
   Nil
 
 sbtPlugin := true
