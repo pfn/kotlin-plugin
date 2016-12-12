@@ -132,14 +132,13 @@ case class KotlinStub(s: TaskStreams, kref: KotlinReflection) {
         if (method.getName == "report") {
           val Array(severity, message, location) = args
           val l = location.asInstanceOf[CompilerMessageLocation]
+          val msg = Option(l.getPath).fold(message.toString)(loc =>
+            loc + ": " + l.getLine + ", " + l.getColumn + ": " + message)
           severity.toString match {
-            case "INFO"                 => s.log.info(message.toString)
-              val msg = Option(l.getPath).fold(message.toString)(loc =>
-                loc + ": " + l.getLine + ", " + l.getColumn + ": " + message)
-              s.log.info(msg)
-            case "WARNING"              => s.log.warn(message.toString)
-            case "ERROR"  | "EXCEPTION" => s.log.error(message.toString)
-            case "OUTPUT" | "LOGGING"   => s.log.debug(message.toString)
+            case "INFO"                 => s.log.info(msg)
+            case "WARNING"              => s.log.warn(msg)
+            case "ERROR"  | "EXCEPTION" => s.log.error(msg)
+            case "OUTPUT" | "LOGGING"   => s.log.debug(msg)
           }
         }
         null
