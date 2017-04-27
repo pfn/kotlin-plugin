@@ -40,6 +40,8 @@ Current version 1.0.7
   `kotlinVersion`
   plugin
 * `kotlincOptions`: options to pass to the kotlin compiler
+* `updateCheck in Kotlin := ()` in the root project disables the check version
+  for the latest version of this plugin
 
 ### Examples
 
