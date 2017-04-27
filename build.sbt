@@ -5,7 +5,7 @@ name := "kotlin-plugin"
 
 organization := "com.hanhuy.sbt"
 
-version := "1.0.6"
+version := "1.0.7-SNAPSHOT"
 
 scalacOptions ++= Seq("-deprecation","-Xlint","-feature")
 

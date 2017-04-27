@@ -79,7 +79,7 @@ object KotlinReflection {
     val servicesClass = cl.loadClass("org.jetbrains.kotlin.config.Services")
     val messageCollectorClass = cl.loadClass("org.jetbrains.kotlin.cli.common.messages.MessageCollector")
     val commonCompilerArgsClass = cl.loadClass("org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments")
-    val classesToTry = "org.jetbrains.kotlin.com.sampullara.cli.Args" :: "org.jetbrains.kotlin.relocated.com.sampullara.cli.Args" :: Nil
+    val classesToTry = "org.jetbrains.kotlin.com.sampullara.cli.Args" :: "org.jetbrains.kotlin.relocated.com.sampullara.cli.Args" :: "org.jetbrains.kotlin.cli.common.parser.com.sampullara.cli.Args" :: Nil
     val argsClass = classesToTry.view.map(x => Try(cl.loadClass(x))).find(_.isSuccess)
       .getOrElse(throw new MessageOnlyException("Unable to find Args class")).get
     // kotlin 1.0.2 bundles broken spullara:cli-args that removed Args.parse(Object,String[])
@@ -137,6 +137,7 @@ case class KotlinStub(s: TaskStreams, kref: KotlinReflection) {
           severity.toString match {
             case "INFO"                 => s.log.info(msg)
             case "WARNING"              => s.log.warn(msg)
+            case "STRONG_WARNING"       => s.log.warn(msg)
             case "ERROR"  | "EXCEPTION" => s.log.error(msg)
             case "OUTPUT" | "LOGGING"   => s.log.debug(msg)
           }
