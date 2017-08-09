@@ -53,7 +53,6 @@ object KotlinCompile {
       args.freeArgs = (kotlinSources ++ javaSources.map(_._1)).map(_.getAbsolutePath).asJava
       args.noStdlib = true
 
-      stub.parse(args.instance, options.toArray)
       val fcpjars = classpath.map(_.data.getAbsoluteFile)
       val (pluginjars, cpjars) = fcpjars.partition {
         grepjar(_)(_.getName.startsWith(
@@ -79,14 +78,6 @@ object KotlinReflection {
     val servicesClass = cl.loadClass("org.jetbrains.kotlin.config.Services")
     val messageCollectorClass = cl.loadClass("org.jetbrains.kotlin.cli.common.messages.MessageCollector")
     val commonCompilerArgsClass = cl.loadClass("org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments")
-    val classesToTry = "org.jetbrains.kotlin.com.sampullara.cli.Args" :: "org.jetbrains.kotlin.relocated.com.sampullara.cli.Args" :: "org.jetbrains.kotlin.cli.common.parser.com.sampullara.cli.Args" :: Nil
-    val argsClass = classesToTry.view.map(x => Try(cl.loadClass(x))).find(_.isSuccess)
-      .getOrElse(throw new MessageOnlyException("Unable to find Args class")).get
-    // kotlin 1.0.2 bundles broken spullara:cli-args that removed Args.parse(Object,String[])
-    val parseMethod = Try(argsClass.getMethod("parse", classOf[Object], classOf[Array[String]])).map(Left.apply).recoverWith {
-      case _ =>
-        Try(argsClass.getMethod("parse", classOf[Object], classOf[Array[String]], classOf[Boolean])).map(Right.apply)
-    }.getOrElse(throw new MessageOnlyException("Unable to find method Args.parse in kotlin compiler bundle"))
 
     KotlinReflection(
       cl,
@@ -96,9 +87,7 @@ object KotlinReflection {
       messageCollectorClass,
       commonCompilerArgsClass,
       compilerClass.getMethod("exec", messageCollectorClass, servicesClass, commonCompilerArgsClass),
-      servicesClass.getDeclaredField("EMPTY"),
-      argsClass,
-      parseMethod)
+      servicesClass.getDeclaredField("EMPTY"))
   }
 }
 case class KotlinReflection(cl: ClassLoader,
@@ -108,16 +97,10 @@ case class KotlinReflection(cl: ClassLoader,
                             messageCollectorClass: Class[_],
                             commonCompilerArgsClass: Class[_],
                             compilerExec: Method,
-                            servicesEmptyField: Field,
-                            argsClass: Class[_],
-                            argsParse: Either[Method,Method])
+                            servicesEmptyField: Field)
 case class KotlinStub(s: TaskStreams, kref: KotlinReflection) {
   import language.reflectiveCalls
   import kref._
-
-  def parse(args: Object, options: Array[String]): Unit = {
-    argsParse.fold(_.invoke(null, args, options), _.invoke(null, args,options, false: java.lang.Boolean))
-  }
 
   def messageCollector: AnyRef = {
     type CompilerMessageLocation = {
@@ -132,7 +115,7 @@ case class KotlinStub(s: TaskStreams, kref: KotlinReflection) {
         if (method.getName == "report") {
           val Array(severity, message, location) = args
           val l = location.asInstanceOf[CompilerMessageLocation]
-          val msg = Option(l.getPath).fold(message.toString)(loc =>
+          val msg = Option(l).map(x => x.getPath).fold(message.toString)(loc =>
             loc + ": " + l.getLine + ", " + l.getColumn + ": " + message)
           severity.toString match {
             case "INFO"                 => s.log.info(msg)
