@@ -20,7 +20,7 @@ object KotlinPlugin extends AutoPlugin {
   }) :: Nil
 
   override def projectSettings = Seq(
-    libraryDependencies <+= Def.setting {
+    libraryDependencies += {
       "org.jetbrains.kotlin" % "kotlin-compiler-embeddable" % kotlinVersion.value % KotlinInternal.name
     },
     managedClasspath in KotlinInternal := Classpaths.managedJars(KotlinInternal, classpathTypes.value, update.value),
@@ -45,7 +45,7 @@ object KotlinPlugin extends AutoPlugin {
     kotlinVersion := "1.1.2",
     kotlincOptions := Nil,
     kotlincPluginOptions := Nil,
-    watchSources     <++= Def.task {
+    watchSources     ++= {
       import language.postfixOps
       val kotlinSources = "*.kt" || "*.kts"
       (sourceDirectories in Compile).value.flatMap(_ ** kotlinSources get) ++
@@ -59,15 +59,15 @@ object KotlinPlugin extends AutoPlugin {
   // public to allow kotlin compile in other configs beyond Compile and Test
   val kotlinCompileSettings = List(
     unmanagedSourceDirectories += kotlinSource.value,
-    kotlincOptions <<= kotlincOptions in This,
-    kotlincPluginOptions <<= kotlincPluginOptions in This,
-    kotlinCompile <<= Def.task {
+    kotlincOptions := (kotlincOptions in This).value,
+    kotlincPluginOptions := (kotlincPluginOptions in This).value,
+    kotlinCompile := Def.task {
         KotlinCompile.compile(kotlincOptions.value,
           sourceDirectories.value, kotlincPluginOptions.value,
           dependencyClasspath.value, (managedClasspath in KotlinInternal).value,
           classDirectory.value, streams.value)
-    } dependsOn (compileInputs in (Compile,compile)),
-    compile <<= compile dependsOn kotlinCompile,
+    }.dependsOn (compileInputs in (Compile,compile)).value,
+    compile := (compile dependsOn kotlinCompile).value,
     kotlinSource := sourceDirectory.value / "kotlin"
   )
 }
