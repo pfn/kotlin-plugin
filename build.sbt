@@ -19,7 +19,7 @@ sbtPlugin := true
 
 buildInfoSettings
 
-sourceGenerators in Compile <+= buildInfo
+sourceGenerators in Compile += buildInfo
 
 buildInfoPackage := "kotlin"
 

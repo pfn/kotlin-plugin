@@ -29,7 +29,7 @@ object Keys {
     "org.jetbrains.kotlin" % ("kotlin-" + name) % kotlinVersion.value % "compile-internal"
 
   def kotlinClasspath(config: Configuration, classpathKey: Def.Initialize[sbt.Keys.Classpath]): Setting[_] =
-    kotlincOptions in config <++= Def.task {
+    kotlincOptions in config ++= {
     "-cp" :: classpathKey.value.map(_.data.getAbsolutePath).mkString(
       java.io.File.pathSeparator) ::
       Nil
