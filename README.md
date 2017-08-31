@@ -4,7 +4,7 @@
 
 Build kotlin code using sbt
 
-Current version 1.0.7
+Current version 1.0.8
 
 ## Usage
 
@@ -34,7 +34,7 @@ Current version 1.0.7
 * `kotlinSource`: specifies kotlin source directory, defaults to
   `src/main/kotlin` and `src/test/kotlin`
 * `kotlinVersion`: specifies versions of kotlin compiler and libraries to use,
-   defaults to `1.0.3`
+   defaults to `1.1.4-3`
 * `kotlinLib(LIB)`: load a standard kotlin library, for example
   `kotlinLib("stdlib")`; the library will utilize the version specified in
   `kotlinVersion`
@@ -54,3 +54,4 @@ Current version 1.0.7
   `testOnly <test-class>` may be able to test individual classes/suites in
   place of `test`. Any other tasks which rely on automatically detecting
   classes will fail similarly.
+* currently requires kotlin 1.1.4+
