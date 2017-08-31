@@ -34,6 +34,7 @@ object KotlinCompile {
     import language.reflectiveCalls
     val stub = KotlinStub(s, kotlinMemo(compilerClasspath))
     val args = stub.compilerArgs
+    stub.parse(args.instance, options.toList)
     val kotlinFiles = "*.kt" || "*.kts"
     val javaFiles = "*.java"
 
@@ -60,7 +61,11 @@ object KotlinCompile {
       }
       val cp = cpjars.mkString(File.pathSeparator)
       val pcp = pluginjars.map(_.getAbsolutePath).toArray
+      s.log.info("cp was: " + args.classpath)
       args.classpath = Option(args.classpath[String]).fold(cp)(_ + File.pathSeparator + cp)
+      s.log.info("plugins: " + pluginjars)
+      s.log.info("cps: " + cpjars)
+      s.log.info("set classpath to: " + args.classpath)
       args.pluginClasspaths = Option(args.pluginClasspaths[Array[String]]).fold(pcp)(_ ++ pcp)
       args.pluginOptions = Option(args.pluginOptions[Array[String]]).fold(
         kotlinPluginOptions.toArray)(_ ++ kotlinPluginOptions.toArray[String])
@@ -79,6 +84,19 @@ object KotlinReflection {
     val messageCollectorClass = cl.loadClass("org.jetbrains.kotlin.cli.common.messages.MessageCollector")
     val commonCompilerArgsClass = cl.loadClass("org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments")
 
+    val compilerExec = Try(
+      compilerClass.getMethod("exec",
+        messageCollectorClass, servicesClass, commonCompilerArgsClass)
+      ).toOption.getOrElse {
+
+        val commonToolArguments = cl.loadClass(
+          "org.jetbrains.kotlin.cli.common.arguments.CommonToolArguments")
+        val clitool = cl.loadClass(
+          "org.jetbrains.kotlin.cli.common.CLITool")
+        clitool.getMethod("exec", 
+          messageCollectorClass, servicesClass, commonToolArguments)
+      }
+
     KotlinReflection(
       cl,
       servicesClass,
@@ -86,7 +104,7 @@ object KotlinReflection {
       cl.loadClass("org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments"),
       messageCollectorClass,
       commonCompilerArgsClass,
-      compilerClass.getMethod("exec", messageCollectorClass, servicesClass, commonCompilerArgsClass),
+      compilerExec,
       servicesClass.getDeclaredField("EMPTY"))
   }
 }
@@ -130,6 +148,18 @@ case class KotlinStub(s: TaskStreams, kref: KotlinReflection) {
     }
 
     Proxy.newProxyInstance(cl, Array(messageCollectorClass), messageCollectorInvocationHandler)
+  }
+
+  def parse(args: Object, options: List[String]): Unit = {
+    // TODO FIXME, this is much worse than it used to be, the parsing api has been
+    // deeply in flux since 1.1.x
+    val parser = kref.cl.loadClass(
+      "org.jetbrains.kotlin.cli.common.arguments.ParseCommandLineArgumentsKt")
+    val commonToolArguments = cl.loadClass(
+      "org.jetbrains.kotlin.cli.common.arguments.CommonToolArguments")
+    val parserMethod = parser.getMethod("parseCommandLineArguments", classOf[java.util.List[java.lang.String]], commonToolArguments)
+    import collection.JavaConverters._
+    parserMethod.invoke(null, options.asJava, args)
   }
 
   def compilerArgs = {
