@@ -61,11 +61,7 @@ object KotlinCompile {
       }
       val cp = cpjars.mkString(File.pathSeparator)
       val pcp = pluginjars.map(_.getAbsolutePath).toArray
-      s.log.info("cp was: " + args.classpath)
       args.classpath = Option(args.classpath[String]).fold(cp)(_ + File.pathSeparator + cp)
-      s.log.info("plugins: " + pluginjars)
-      s.log.info("cps: " + cpjars)
-      s.log.info("set classpath to: " + args.classpath)
       args.pluginClasspaths = Option(args.pluginClasspaths[Array[String]]).fold(pcp)(_ ++ pcp)
       args.pluginOptions = Option(args.pluginOptions[Array[String]]).fold(
         kotlinPluginOptions.toArray)(_ ++ kotlinPluginOptions.toArray[String])
