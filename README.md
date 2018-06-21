@@ -40,6 +40,7 @@ Current version 1.0.8
   `kotlinVersion`
   plugin
 * `kotlincOptions`: options to pass to the kotlin compiler
+* `definedTests in Test := KotlinTest.kotlinTests.value`: specifies kotlin test classes
 
 ### Examples
 
