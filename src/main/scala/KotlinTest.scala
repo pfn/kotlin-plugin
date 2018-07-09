@@ -8,7 +8,6 @@ import xsbti.compile.SingleOutput
 
 object KotlinTest {
   val kotlinTests = Def.task {
-    val old = (definedTests in Test).value
     val out = ((target in Test).value ** "scala-*").get.head / "test-classes"
     val srcs = ((sourceDirectory  in Test).value ** "*.kt").get.toList
     val xs = (out ** "*.class").get.toList
@@ -36,6 +35,6 @@ object KotlinTest {
       IncOptions.Default)._2
     val frameworks = (loadedTestFrameworks in Test).value.values.toList
     log.info(s"Compiling ${srcs.length} Kotlin source to ${out}...")
-    old ++ Tests.discover(frameworks, a0, log)._1
+    Tests.discover(frameworks, a0, log)._1
   }
 }

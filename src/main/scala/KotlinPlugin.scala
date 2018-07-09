@@ -69,6 +69,6 @@ object KotlinPlugin extends AutoPlugin {
     }.dependsOn (compileInputs in (Compile,compile)).value,
     compile := (compile dependsOn kotlinCompile).value,
     kotlinSource := sourceDirectory.value / "kotlin",
-    definedTests in Test := KotlinTest.kotlinTests.value
+    definedTests in Test ++= KotlinTest.kotlinTests.value
   )
 }
