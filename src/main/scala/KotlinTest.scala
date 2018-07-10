@@ -15,7 +15,7 @@ object KotlinTest {
     val loader = ClasspathUtilities.toLoader((fullClasspath in Test).value map {
       _.data
     })
-    val log = sLog.value
+    val log = streams.value.log
     val a0 = IncrementalCompile(
       srcs.toSet, s => None,
       (fs, changs, callback) => {
