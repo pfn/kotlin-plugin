@@ -1,3 +1,3 @@
 > compile
 > test
-> "test-only *MixedTest"
+> "checkTestPass MixedTest"
