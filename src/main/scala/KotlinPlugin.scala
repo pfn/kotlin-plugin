@@ -1,7 +1,6 @@
 package kotlin
 
 import Keys._
-import com.hanhuy.sbt.bintray.UpdateChecker
 import sbt._
 import sbt.Keys._
 import sbt.plugins.JvmPlugin
@@ -59,8 +58,8 @@ object KotlinPlugin extends AutoPlugin {
   // public to allow kotlin compile in other configs beyond Compile and Test
   val kotlinCompileSettings = List(
     unmanagedSourceDirectories += kotlinSource.value,
-    kotlincOptions := (kotlincOptions in This).value,
-    kotlincPluginOptions := (kotlincPluginOptions in This).value,
+    kotlincOptions := kotlincOptions.value,
+    kotlincPluginOptions := kotlincPluginOptions.value,
     kotlinCompile := Def.task {
         KotlinCompile.compile(kotlincOptions.value,
           sourceDirectories.value, kotlincPluginOptions.value,

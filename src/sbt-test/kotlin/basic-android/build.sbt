@@ -1,4 +1,4 @@
-androidBuild
+enablePlugins(AndroidApp)
 
 kotlinClasspath(Compile, bootClasspath in Android)
 

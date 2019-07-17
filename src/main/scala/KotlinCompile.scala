@@ -6,10 +6,10 @@ import java.util.jar.JarEntry
 
 import sbt.Keys.{Classpath, TaskStreams}
 import sbt._
-import sbt.classpath.ClasspathUtilities
+import sbt.io._
+import sbt.internal.inc.classpath.ClasspathUtilities
 
 import collection.JavaConverters._
-import language.existentials
 import scala.util.Try
 
 /**
@@ -89,7 +89,7 @@ object KotlinReflection {
           "org.jetbrains.kotlin.cli.common.arguments.CommonToolArguments")
         val clitool = cl.loadClass(
           "org.jetbrains.kotlin.cli.common.CLITool")
-        clitool.getMethod("exec", 
+        clitool.getMethod("exec",
           messageCollectorClass, servicesClass, commonToolArguments)
       }
 
