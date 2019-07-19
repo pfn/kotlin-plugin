@@ -19,7 +19,7 @@ object Keys {
   val kotlinSource = SettingKey[File]("kotlin-source", "kotlin source directory")
   val kotlinVersion = SettingKey[String]("kotlin-version",
     "version of kotlin to use for building")
-  val kotlincOptions = TaskKey[Seq[String]]("kotlinc-options",
+  val kotlincOptions = SettingKey[Seq[String]]("kotlinc-options",
     "options to pass to the kotlin compiler")
 
   def kotlinLib(name: String) = sbt.Keys.libraryDependencies +=

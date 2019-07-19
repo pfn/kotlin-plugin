@@ -1,7 +1,6 @@
 package kotlin
 
 import Keys._
-import com.hanhuy.sbt.bintray.UpdateChecker
 import sbt._
 import sbt.Keys._
 import sbt.plugins.JvmPlugin
