@@ -161,17 +161,32 @@ case class KotlinStub(s: TaskStreams, kref: KotlinReflection) {
   def compilerArgs = {
     import language.dynamics
     new Dynamic {
+      def withFirstUpper(string: String): String = string.head.toUpper + string.tail
+      def getterName(field: String) = s"get${withFirstUpper(field)}"
+      def setterName(field: String) = s"set${withFirstUpper(field)}"
+
       def selectDynamic[A](field: String): A = {
-        val f = compilerArgsClass.getField(field)
-        f.get(instance).asInstanceOf[A]
+        val methodName = getterName(field)
+        val getterOpt = compilerArgsClass.getMethods.find(_.getName == methodName)
+        getterOpt match {
+          case Some(getter) => getter.invoke(instance).asInstanceOf[A]
+          case None => compilerArgsClass.getField(field).get(instance).asInstanceOf[A]
+        }
       }
+
       def updateDynamic(field: String)(value: Any): Unit = {
-        val f = compilerArgsClass.getField(field)
-        f.set(instance, value)
+        val methodName = setterName(field)
+        val setterOpt = compilerArgsClass.getMethods.find(_.getName == methodName)
+        setterOpt match {
+          case Some(setter) => setter.invoke(instance, value.asInstanceOf[Object])
+          case None => compilerArgsClass.getField(field).set(instance, value)
+        }
       }
+
       val instance = compilerArgsClass.newInstance().asInstanceOf[AnyRef]
     }
   }
+
   def compile(args: AnyRef): Unit = {
     val compiler = compilerClass.newInstance()
     val result = compilerExec.invoke(compiler,
