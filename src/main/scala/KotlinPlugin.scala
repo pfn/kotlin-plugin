@@ -42,7 +42,7 @@ object KotlinPlugin extends AutoPlugin {
           }
       }
     },
-    kotlinVersion := "1.1.4-3",
+    kotlinVersion := "1.3.41",
     kotlincOptions := Nil,
     kotlincPluginOptions := Nil,
     watchSources     ++= {
@@ -59,8 +59,8 @@ object KotlinPlugin extends AutoPlugin {
   // public to allow kotlin compile in other configs beyond Compile and Test
   val kotlinCompileSettings = List(
     unmanagedSourceDirectories += kotlinSource.value,
-    kotlincOptions := (kotlincOptions in This).value,
-    kotlincPluginOptions := (kotlincPluginOptions in This).value,
+    kotlincOptions := kotlincOptions.value,
+    kotlincPluginOptions := kotlincPluginOptions.value,
     kotlinCompile := Def.task {
         KotlinCompile.compile(kotlincOptions.value,
           sourceDirectories.value, kotlincPluginOptions.value,
