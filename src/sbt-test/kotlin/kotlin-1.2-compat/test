@@ -1,0 +1,3 @@
+> compile
+> listClasses
+$ exists target/scala-2.10/classes/demo/SimpleKt.class
