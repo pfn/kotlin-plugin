@@ -4,12 +4,12 @@
 
 Build kotlin code using sbt
 
-Current version 1.0.9
+Current version 2.0.0
 
 ## Usage
 
 * for sbt 0.13.6+
-* `addSbtPlugin("com.hanhuy.sbt" % "kotlin-plugin" % "1.0.7")`
+* `addSbtPlugin("com.hanhuy.sbt" % "kotlin-plugin" % "2.0.0")`
 * Kotlin code will build automatically from `src/XXX/kotlin`
 * If necessary, add `kotlinLib("stdlib")`, it is not included by default.
   * Loading standard kotlin libraries and plugins: use `kotlinLib(NAME)` as
@@ -34,7 +34,7 @@ Current version 1.0.9
 * `kotlinSource`: specifies kotlin source directory, defaults to
   `src/main/kotlin` and `src/test/kotlin`
 * `kotlinVersion`: specifies versions of kotlin compiler and libraries to use,
-   defaults to `1.1.4-3`
+   defaults to `1.3.41`
 * `kotlinLib(LIB)`: load a standard kotlin library, for example
   `kotlinLib("stdlib")`; the library will utilize the version specified in
   `kotlinVersion`
@@ -47,11 +47,4 @@ Current version 1.0.9
 
 ### Limitations
 
-* kotlin compilation runs outside of the normal sbt compilation infrastructure.
-  As a result, sbt is unaware of classes generated during kotlin compilation.
-  `run` and `test` will not work automatically since kotlin classes will not
-  have been discovered. `runMain <main-class>` can be used in place of `run`.
-  `testOnly <test-class>` may be able to test individual classes/suites in
-  place of `test`. Any other tasks which rely on automatically detecting
-  classes will fail similarly.
 * currently requires kotlin 1.1.4+
