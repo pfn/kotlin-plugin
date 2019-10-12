@@ -18,12 +18,25 @@ object KotlinPlugin extends AutoPlugin {
     Project.runTask(updateCheck in Keys.Kotlin, s).fold(s)(_._1)
   }) :: Nil
 
+  private def kotlinScriptCompilerDeps(kotlinVer: String) = {
+    import scala.math.Ordering.Implicits.infixOrderingOps
+
+    if (KotlinVersion(kotlinVer) <= KotlinVersion("1.3.21")) {
+      Seq(
+        "org.jetbrains.kotlin" % "kotlin-script-runtime" % kotlinVer
+      )
+    } else {
+      Seq(
+        "org.jetbrains.kotlin" % "kotlin-scripting-compiler-embeddable" % kotlinVer % KotlinInternal.name,
+        "org.jetbrains.kotlin" % "kotlin-scripting-compiler-embeddable" % kotlinVer
+      )
+    }
+  }
+
   override def projectSettings = Seq(
     libraryDependencies ++= Seq(
-      "org.jetbrains.kotlin" % "kotlin-compiler-embeddable" % kotlinVersion.value % KotlinInternal.name,
-      "org.jetbrains.kotlin" % "kotlin-scripting-compiler-embeddable" % kotlinVersion.value % KotlinInternal.name,
-      "org.jetbrains.kotlin" % "kotlin-scripting-compiler-embeddable" % kotlinVersion.value,
-  ),
+      "org.jetbrains.kotlin" % "kotlin-compiler-embeddable" % kotlinVersion.value % KotlinInternal.name
+    ) ++ kotlinScriptCompilerDeps(kotlinVersion.value),
     managedClasspath in KotlinInternal := Classpaths.managedJars(KotlinInternal, classpathTypes.value, update.value),
     updateCheck in Kotlin := {
       val log = streams.value.log
