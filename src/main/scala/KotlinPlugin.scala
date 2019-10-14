@@ -19,9 +19,11 @@ object KotlinPlugin extends AutoPlugin {
   }) :: Nil
 
   override def projectSettings = Seq(
-    libraryDependencies += {
-      "org.jetbrains.kotlin" % "kotlin-compiler-embeddable" % kotlinVersion.value % KotlinInternal.name
-    },
+    libraryDependencies ++= Seq(
+      "org.jetbrains.kotlin" % "kotlin-compiler-embeddable" % kotlinVersion.value % KotlinInternal.name,
+      "org.jetbrains.kotlin" % "kotlin-scripting-compiler-embeddable" % kotlinVersion.value % KotlinInternal.name,
+      "org.jetbrains.kotlin" % "kotlin-scripting-compiler-embeddable" % kotlinVersion.value,
+  ),
     managedClasspath in KotlinInternal := Classpaths.managedJars(KotlinInternal, classpathTypes.value, update.value),
     updateCheck in Kotlin := {
       val log = streams.value.log
