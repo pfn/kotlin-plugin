@@ -183,12 +183,12 @@ case class KotlinStub(s: TaskStreams, kref: KotlinReflection) {
         }
       }
 
-      val instance = compilerArgsClass.newInstance().asInstanceOf[AnyRef]
+      val instance = compilerArgsClass.getDeclaredConstructor().newInstance().asInstanceOf[AnyRef]
     }
   }
 
   def compile(args: AnyRef): Unit = {
-    val compiler = compilerClass.newInstance()
+    val compiler = compilerClass.getDeclaredConstructor().newInstance()
     val result = compilerExec.invoke(compiler,
       messageCollector, servicesEmptyField.get(null), args: java.lang.Object)
     result.toString match {
