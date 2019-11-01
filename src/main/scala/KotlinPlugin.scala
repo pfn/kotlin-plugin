@@ -56,7 +56,7 @@ object KotlinPlugin extends AutoPlugin {
           }
       }
     },
-    kotlinVersion := "1.3.41",
+    kotlinVersion := "1.3.50",
     kotlincOptions := Nil,
     kotlincPluginOptions := Nil,
     watchSources     ++= {

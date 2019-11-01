@@ -32,6 +32,9 @@ object KotlinTest {
       _.data
     })
     val log = streams.value.log
+    val output = new SingleOutput {
+      def getOutputDirectory: File = out
+    }
     val a0 = IncrementalCompile(
       srcs.toSet,
       EmptyLookup,
@@ -45,14 +48,13 @@ object KotlinTest {
           }
         }
 
-        Analyze(xs, srcs, log)(callback, loader, readAPI)
+        Analyze(xs, srcs, log, output, None)(callback, loader, readAPI)
       },
       Analysis.Empty,
-      new SingleOutput {
-        def getOutputDirectory(): java.io.File = out
-      },
+      output,
       log,
-      incOptions.value)._2
+      incOptions.value,
+      JarUtils.createOutputJarContent(output))._2
     val frameworks = (loadedTestFrameworks in Test).value.values.toList
     log.info(s"Compiling ${srcs.length} Kotlin source to $out...")
     Tests.discover(frameworks, a0, log)._1
