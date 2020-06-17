@@ -21,6 +21,8 @@ object Keys {
     "version of kotlin to use for building")
   val kotlincOptions = SettingKey[Seq[String]]("kotlinc-options",
     "options to pass to the kotlin compiler")
+  val kotlincJvmTarget = SettingKey[String]("kotlinc-jvm-target",
+    "jvm target to use for building")
 
   def kotlinLib(name: String) = sbt.Keys.libraryDependencies +=
     "org.jetbrains.kotlin" % ("kotlin-" + name) % kotlinVersion.value

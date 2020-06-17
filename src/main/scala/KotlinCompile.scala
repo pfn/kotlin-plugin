@@ -26,6 +26,7 @@ object KotlinCompile {
     KotlinReflection.fromClasspath(cp))
 
   def compile(options: Seq[String],
+              jvmTarget: String,
               sourceDirs: Seq[File],
               kotlinPluginOptions: Seq[String],
               classpath: Classpath,
@@ -53,7 +54,7 @@ object KotlinCompile {
       s.log.info(message)
       args.freeArgs = (kotlinSources ++ javaSources.map(_._1)).map(_.getAbsolutePath).asJava
       args.noStdlib = true
-
+      args.jvmTarget = jvmTarget
       val fcpjars = classpath.map(_.data.getAbsoluteFile)
       val (pluginjars, cpjars) = fcpjars.partition {
         grepjar(_)(_.getName.startsWith(
