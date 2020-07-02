@@ -57,6 +57,7 @@ object KotlinPlugin extends AutoPlugin {
       }
     },
     kotlinVersion := "1.3.50",
+    kotlincJvmTarget := "1.6",
     kotlincOptions := Nil,
     kotlincPluginOptions := Nil,
     watchSources     ++= {
@@ -74,9 +75,11 @@ object KotlinPlugin extends AutoPlugin {
   val kotlinCompileSettings = List(
     unmanagedSourceDirectories += kotlinSource.value,
     kotlincOptions := kotlincOptions.value,
+    kotlincJvmTarget := kotlincJvmTarget.value,
     kotlincPluginOptions := kotlincPluginOptions.value,
     kotlinCompile := Def.task {
         KotlinCompile.compile(kotlincOptions.value,
+          kotlincJvmTarget.value,
           sourceDirectories.value, kotlincPluginOptions.value,
           dependencyClasspath.value, (managedClasspath in KotlinInternal).value,
           classDirectory.value, streams.value)
