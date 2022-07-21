@@ -1,3 +1,0 @@
-> android:package
-$ exists target/android/output/extensions-android-debug.apk
-> checkDex
