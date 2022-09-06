@@ -1,0 +1,4 @@
+> compile
+> listClasses
+$ exists target/scala-2.12/classes/demo/SimpleKt.class
+$ exists target/scala-2.12/classes/SimpleScript.class

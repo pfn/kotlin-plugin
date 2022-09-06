@@ -36,5 +36,6 @@ bintrayOrganization := None
 // scripted
 scriptedLaunchOpts ++= Seq(
   "-Xmx1024m",
-  "-Dplugin.version=" + version.value
-)
+  "-Dplugin.org=" + organization.value,
+  "-Dplugin.name=" + name.value,
+  "-Dplugin.version=" + version.value)
