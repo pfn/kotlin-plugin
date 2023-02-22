@@ -15,7 +15,7 @@ object KotlinPlugin extends AutoPlugin {
   override def projectConfigurations = KotlinInternal :: Nil
 
   override def globalSettings = (onLoad := onLoad.value andThen { s =>
-    Project.runTask(updateCheck in Keys.Kotlin, s).fold(s)(_._1)
+    Project.runTask(Keys.Kotlin / updateCheck, s).fold(s)(_._1)
   }) :: Nil
 
   private def kotlinScriptCompilerDeps(kotlinVer: String) = {
@@ -37,8 +37,8 @@ object KotlinPlugin extends AutoPlugin {
     libraryDependencies ++= Seq(
       "org.jetbrains.kotlin" % "kotlin-compiler-embeddable" % kotlinVersion.value % KotlinInternal.name
     ) ++ kotlinScriptCompilerDeps(kotlinVersion.value),
-    managedClasspath in KotlinInternal := Classpaths.managedJars(KotlinInternal, classpathTypes.value, update.value),
-    updateCheck in Kotlin := {
+    KotlinInternal / managedClasspath := Classpaths.managedJars(KotlinInternal, classpathTypes.value, update.value),
+    Kotlin / updateCheck := {
       val log = streams.value.log
       UpdateChecker("pfn", "sbt-plugins", "kotlin-plugin") {
         case Left(t) =>
@@ -63,8 +63,8 @@ object KotlinPlugin extends AutoPlugin {
     watchSources     ++= {
       import language.postfixOps
       val kotlinSources = "*.kt" || "*.kts"
-      (sourceDirectories in Compile).value.flatMap(_ ** kotlinSources get) ++
-        (sourceDirectories in Test).value.flatMap(_ ** kotlinSources get)
+      (Compile / sourceDirectories).value.flatMap(_ ** kotlinSources get) ++
+        (Test / sourceDirectories).value.flatMap(_ ** kotlinSources get)
     }
   ) ++ inConfig(Compile)(kotlinCompileSettings) ++
     inConfig(Test)(kotlinCompileSettings)
@@ -81,11 +81,11 @@ object KotlinPlugin extends AutoPlugin {
         KotlinCompile.compile(kotlincOptions.value,
           kotlincJvmTarget.value,
           sourceDirectories.value, kotlincPluginOptions.value,
-          dependencyClasspath.value, (managedClasspath in KotlinInternal).value,
+          dependencyClasspath.value, (KotlinInternal / managedClasspath).value,
           classDirectory.value, streams.value)
-    }.dependsOn (compileInputs in (Compile,compile)).value,
+    }.dependsOn ((Compile,compile) / compileInputs).value,
     compile := (compile dependsOn kotlinCompile).value,
     kotlinSource := sourceDirectory.value / "kotlin",
-    definedTests in Test ++= KotlinTest.kotlinTests.value
+    Test / definedTests ++= KotlinTest.kotlinTests.value
   )
 }
