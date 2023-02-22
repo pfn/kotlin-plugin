@@ -14,6 +14,8 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 14
+          java-version: 17
       - name: Build and Test
-        run: sbt compile scripted publish
+        run: sbt compile scripted
+      - name: Publish
+        run: sbt publish
