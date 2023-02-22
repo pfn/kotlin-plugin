@@ -7,9 +7,10 @@ import java.util.jar.JarEntry
 import sbt.Keys.{Classpath, TaskStreams}
 import sbt._
 import sbt.io._
-import sbt.internal.inc.classpath.ClasspathUtilities
+import sbt.internal.inc.classpath.ClasspathUtil
 
 import collection.JavaConverters._
+import scala.math.Ordered.orderingToOrdered
 import scala.util.Try
 
 /**
@@ -27,6 +28,7 @@ object KotlinCompile {
 
   def compile(options: Seq[String],
               jvmTarget: String,
+              kotlinVersion: String,
               sourceDirs: Seq[File],
               kotlinPluginOptions: Seq[String],
               classpath: Classpath,
@@ -35,7 +37,7 @@ object KotlinCompile {
     import language.reflectiveCalls
     val stub = KotlinStub(s, kotlinMemo(compilerClasspath))
     val args = stub.compilerArgs
-    stub.parse(args.instance, options.toList)
+    stub.parse(kotlinVersion, args.instance, options.toList)
     val kotlinFiles = "*.kt" || "*.kts"
     val javaFiles = "*.java"
 
@@ -75,7 +77,7 @@ object KotlinCompile {
 
 object KotlinReflection {
   def fromClasspath(cp: Classpath): KotlinReflection = {
-    val cl = ClasspathUtilities.toLoader(cp.map(_.data))
+    val cl = ClasspathUtil.toLoader(cp.map(_.data))
     val compilerClass = cl.loadClass("org.jetbrains.kotlin.cli.jvm.K2JVMCompiler")
     val servicesClass = cl.loadClass("org.jetbrains.kotlin.config.Services")
     val messageCollectorClass = cl.loadClass("org.jetbrains.kotlin.cli.common.messages.MessageCollector")
@@ -147,16 +149,32 @@ case class KotlinStub(s: TaskStreams, kref: KotlinReflection) {
     Proxy.newProxyInstance(cl, Array(messageCollectorClass), messageCollectorInvocationHandler)
   }
 
-  def parse(args: Object, options: List[String]): Unit = {
+  def parse(kotlinVersion: String, args: Object, options: List[String]): Unit = {
     // TODO FIXME, this is much worse than it used to be, the parsing api has been
     // deeply in flux since 1.1.x
     val parser = kref.cl.loadClass(
-      "org.jetbrains.kotlin.cli.common.arguments.ParseCommandLineArgumentsKt")
+      "org.jetbrains.kotlin.cli.common.arguments.ParseCommandLineArgumentsKt"
+    )
     val commonToolArguments = cl.loadClass(
-      "org.jetbrains.kotlin.cli.common.arguments.CommonToolArguments")
-    val parserMethod = parser.getMethod("parseCommandLineArguments", classOf[java.util.List[java.lang.String]], commonToolArguments)
+      "org.jetbrains.kotlin.cli.common.arguments.CommonToolArguments"
+    )
     import collection.JavaConverters._
-    parserMethod.invoke(null, options.asJava, args)
+    if (KotlinVersion(kotlinVersion) < KotlinVersion("1.7.0")) {
+      val parserMethod = parser.getMethod(
+        "parseCommandLineArguments",
+        classOf[java.util.List[java.lang.String]],
+        commonToolArguments
+      )
+      parserMethod.invoke(null, options.asJava, args)
+    } else {
+      val parserMethod = parser.getMethod(
+        "parseCommandLineArguments",
+        classOf[java.util.List[java.lang.String]],
+        commonToolArguments,
+        classOf[Boolean]
+      )
+      parserMethod.invoke(null, options.asJava, args, false: java.lang.Boolean)
+    }
   }
 
   def compilerArgs = {
