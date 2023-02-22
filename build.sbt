@@ -28,3 +28,18 @@ scriptedLaunchOpts ++= Seq(
   "-Xmx1024m",
   "-Dplugin.version=" + version.value
 )
+
+publishTo := Some("Artifactory Realm" at "https://flock.jfrog.io/artifactory/flock-sbt")
+
+credentials += (if (sys.env.contains("CI")) {
+  Credentials(
+    "Artifactory Realm",
+    "flock.jfrog.io",
+    "github",
+    sys.env("JFROG_TOKEN")
+  )
+} else {
+  Credentials(
+    Path.userHome / ".sbt" / ".credentials"
+  )
+})
