@@ -30,7 +30,7 @@ scriptedLaunchOpts ++= Seq(
 )
 
 publishTo := Some("Artifactory Realm" at "https://flock.jfrog.io/artifactory/flock-sbt")
-
+publishMavenStyle := true
 credentials += (if (sys.env.contains("CI")) {
   Credentials(
     "Artifactory Realm",
