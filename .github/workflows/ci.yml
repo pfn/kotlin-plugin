@@ -5,6 +5,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      JFROG_TOKEN: ${{ secrets.JFROG_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
