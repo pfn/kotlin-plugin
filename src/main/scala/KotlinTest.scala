@@ -7,8 +7,6 @@ import sbt.internal.inc.*
 import xsbti.{VirtualFile, VirtualFileRef}
 import xsbti.compile.*
 
-import java.util.Optional
-
 object KotlinTest {
   private object EmptyLookup extends Lookup {
     def changedClasspathHash: Option[Vector[FileHash]] = None
@@ -20,7 +18,7 @@ object KotlinTest {
     def changedSources(previousAnalysis: xsbti.compile.CompileAnalysis): Option[xsbti.compile.Changes[VirtualFileRef]] = None
     def removedProducts(previousAnalysis: xsbti.compile.CompileAnalysis): Option[Set[VirtualFileRef]] = None
     def shouldDoIncrementalCompilation(changedClasses: Set[String],analysis: xsbti.compile.CompileAnalysis): Boolean = true
-    override def hashClasspath(classpath: Array[VirtualFile]): Optional[Array[FileHash]] = java.util.Optional.empty()
+    override def hashClasspath(classpath: Array[VirtualFile]): java.util.Optional[Array[FileHash]] = java.util.Optional.empty()
   }
 
   val kotlinTests = Def.task {

@@ -83,7 +83,7 @@ object KotlinPlugin extends AutoPlugin {
           sourceDirectories.value, kotlincPluginOptions.value,
           dependencyClasspath.value, (KotlinInternal / managedClasspath).value,
           classDirectory.value, streams.value)
-    }.dependsOn ((Compile,compile) / compileInputs).value,
+    }.dependsOn (Compile / compile / compileInputs).value,
     compile := (compile dependsOn kotlinCompile).value,
     kotlinSource := sourceDirectory.value / "kotlin",
     Test / definedTests ++= KotlinTest.kotlinTests.value
