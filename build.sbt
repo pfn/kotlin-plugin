@@ -2,7 +2,7 @@ name := "sbt-kotlin-plugin"
 
 organization := "community.flock.sbt"
 
-version := "3.0.3"
+version := "3.0.1"
 
 scalacOptions ++= Seq("-deprecation","-Xlint","-feature")
 
