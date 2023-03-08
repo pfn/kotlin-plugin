@@ -19,8 +19,9 @@ ThisBuild / developers := List(
 
 ThisBuild / description := "Sbt Kotlin plugin"
 ThisBuild / licenses := List(
-  "Apache 2" -> new URL("http://www.apache.org/licenses/LICENSE-2.0.txt")
+  "MIT" ->  url("http://opensource.org/licenses/MIT")
 )
+
 ThisBuild / homepage := Some(url("https://github.com/flock-community/kotlin-plugin"))
 
 // Remove all additional repository other than Maven Central from POM

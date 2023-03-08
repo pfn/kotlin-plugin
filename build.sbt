@@ -2,7 +2,7 @@ name := "sbt-kotlin-plugin"
 
 organization := "community.flock.sbt"
 
-version := "3.0.0"
+version := "3.0.3"
 
 scalacOptions ++= Seq("-deprecation","-Xlint","-feature")
 
@@ -18,10 +18,6 @@ sbtPlugin := true
 enablePlugins(BuildInfoPlugin, SbtPlugin)
 
 buildInfoPackage := "kotlin"
-
-publishMavenStyle := false
-
-licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
 
 // scripted
 scriptedLaunchOpts ++= Seq(
