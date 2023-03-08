@@ -2,7 +2,7 @@ name := "sbt-kotlin-plugin"
 
 organization := "community.flock.sbt"
 
-version := "3.0.0"
+version := "3.0.0-SNAPSHOT"
 
 scalacOptions ++= Seq("-deprecation","-Xlint","-feature")
 
@@ -29,17 +29,17 @@ scriptedLaunchOpts ++= Seq(
   "-Dplugin.version=" + version.value
 )
 
-publishTo := Some("Artifactory Realm" at "https://flock.jfrog.io/artifactory/flock-sbt")
-publishMavenStyle := true
-credentials += (if (sys.env.contains("CI")) {
-  Credentials(
-    "Artifactory Realm",
-    "flock.jfrog.io",
-    "github",
-    sys.env("JFROG_TOKEN")
-  )
-} else {
-  Credentials(
-    Path.userHome / ".sbt" / ".credentials"
-  )
-})
+//publishTo := Some("Artifactory Realm" at "https://flock.jfrog.io/artifactory/flock-sbt")
+//publishMavenStyle := true
+//credentials += (if (sys.env.contains("CI")) {
+//  Credentials(
+//    "Artifactory Realm",
+//    "flock.jfrog.io",
+//    "github",
+//    sys.env("JFROG_TOKEN")
+//  )
+//} else {
+//  Credentials(
+//    Path.userHome / ".sbt" / ".credentials"
+//  )
+//})
