@@ -40,7 +40,7 @@ object KotlinPlugin extends AutoPlugin {
     KotlinInternal / managedClasspath := Classpaths.managedJars(KotlinInternal, classpathTypes.value, update.value),
     Kotlin / updateCheck := {
       val log = streams.value.log
-      UpdateChecker("pfn", "sbt-plugins", "kotlin-plugin") {
+      UpdateChecker("pfn", "sbt-plugins", "sbt-kotlin-plugin") {
         case Left(t) =>
           log.debug("Failed to load version info: " + t)
         case Right((versions, current)) =>
@@ -50,7 +50,7 @@ object KotlinPlugin extends AutoPlugin {
           if (versions(BuildInfo.version)) {
             if (BuildInfo.version != current) {
               log.warn(
-                s"UPDATE: A newer kotlin-plugin is available:" +
+                s"UPDATE: A newer sbt-kotlin-plugin is available:" +
                   s" $current, currently running: ${BuildInfo.version}")
             }
           }
