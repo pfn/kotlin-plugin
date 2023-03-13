@@ -6,6 +6,11 @@ Build kotlin code using sbt
 
 Current version 2.0.0
 
+## Install
+```
+addSbtPlugin("community.flock.sbt" % "sbt-kotlin-plugin" % "3.0.1")
+```
+
 ## Usage
 
 * for sbt 1.0.0+ `addSbtPlugin("flock.community.sbt" % "sbt-kotlin-plugin" % "2.0.0")`
