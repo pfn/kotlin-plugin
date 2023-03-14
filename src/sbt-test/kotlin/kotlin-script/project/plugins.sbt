@@ -1,1 +1,1 @@
-addSbtPlugin("com.hanhuy.sbt" % "kotlin-plugin" % sys.props("plugin.version"))
+addSbtPlugin("community.flock.sbt" % "sbt-kotlin-plugin" % sys.props("plugin.version"))

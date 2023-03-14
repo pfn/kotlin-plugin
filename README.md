@@ -1,15 +1,20 @@
-# kotlin-plugin
+# sbt-kotlin-plugin
 
-[![Build Status](https://travis-ci.org/pfn/kotlin-plugin.svg?branch=master)](https://travis-ci.org/pfn/kotlin-plugin)
+[![Build Status](https://travis-ci.org/pfn/sbt-kotlin-plugin.svg?branch=master)](https://travis-ci.org/pfn/sbt-kotlin-plugin)
 
 Build kotlin code using sbt
 
 Current version 2.0.0
 
+## Install
+```
+addSbtPlugin("community.flock.sbt" % "sbt-kotlin-plugin" % "3.0.1")
+```
+
 ## Usage
 
-* for sbt 1.0.0+ `addSbtPlugin("com.hanhuy.sbt" % "kotlin-plugin" % "2.0.0")`
-* for sbt 0.13.x `addSbtPlugin("com.hanhuy.sbt" % "kotlin-plugin" % "1.0.9")`
+* for sbt 1.0.0+ `addSbtPlugin("flock.community.sbt" % "sbt-kotlin-plugin" % "2.0.0")`
+* for sbt 0.13.x `addSbtPlugin("flock.community.sbt" % "sbt-kotlin-plugin" % "1.0.9")`
 * Kotlin code will build automatically from `src/XXX/kotlin`
 * If necessary, add `kotlinLib("stdlib")`, it is not included by default.
   * Loading standard kotlin libraries and plugins: use `kotlinLib(NAME)` as
